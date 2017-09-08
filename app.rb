@@ -3,7 +3,7 @@ require 'sinatra/config_file'
 require 'sinatra/json'
 require 'net/ssh'
 require 'parallel'
-require './lib/glass_fish/command'
+require './lib/glass_fish/status'
 
 class App < Sinatra::Base
   set :root, File.dirname(__FILE__)
@@ -17,9 +17,7 @@ class App < Sinatra::Base
 
   get '/statuses' do
     results = Parallel.map(settings.hosts, in_processes: 5) do |hostname|
-      Net::SSH.start(hostname) do |ssh|
-        server_status.call ssh
-      end
+      GlassFish::Status.fetch hostname
     end
 
     response = Hash[[settings.hosts, results].transpose]
@@ -27,30 +25,6 @@ class App < Sinatra::Base
   end
 
   get '/statuses/:hostname' do
-    result = Net::SSH.start(params['hostname']) do |ssh|
-      server_status.call ssh
-    end
-
-    json({ "#{params['hostname']}": result })
-  end
-
-  private
-
-  def server_status
-    lambda do |ssh|
-      ls_stdout = ssh.exec!(GlassFish::Command.deploy_status).split("\n").map { |i| i.split(" ") }
-
-      ls_stdout.inject({}) do |res, item|
-        war = item[2].gsub(".war", "").split('_')
-
-        res[:glassfish_process_running] = !ssh.exec!(GlassFish::Command.process_check).empty?
-        res[war[0]] = {
-          deploy_status: war[1],
-          deploy_timestamp: "#{item[0]} #{item[1]}",
-          health_check: ssh.exec!(GlassFish::Command.health_check war[0]),
-        }
-        res
-      end
-    end
+    json({ "#{params['hostname']}": GlassFish::Status.fetch(params['hostname']) })
   end
 end
