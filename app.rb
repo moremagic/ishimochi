@@ -43,7 +43,7 @@ class App < Sinatra::Base
       ls_stdout.inject({}) do |res, item|
         war = item[2].gsub(".war", "").split('_')
 
-        res[:glassfish_process_running] = !ssh.exec!(GlassFish::Command.glassfish_process).empty?
+        res[:glassfish_process_running] = !ssh.exec!(GlassFish::Command.process_check).empty?
         res[war[0]] = {
           deploy_status: war[1],
           deploy_timestamp: "#{item[0]} #{item[1]}",

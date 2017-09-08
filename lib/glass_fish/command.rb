@@ -8,7 +8,7 @@ module GlassFish
       "curl -s localhost:8080/#{app_name}/health -o /dev/null -w \"%{http_code}\""
     end
 
-    def self.glassfish_process
+    def self.process_check
       "ps -ef | grep 'glassfish' | grep -v 'grep'"
     end
   end
