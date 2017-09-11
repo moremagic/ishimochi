@@ -26,7 +26,18 @@ class App < Sinatra::Base
   end
 
   get '/statuses/:hostname' do
-    res = Tomcat::Status.fetch(params['hostname'])
+    res = type(params['hostname']).fetch(params['hostname'])
     json({ "#{params['hostname']}": res })
+  end
+
+  private
+
+  def type(hostname)
+    case
+    when settings.hosts['tomcat'].include?(hostname)
+      Tomcat::Status
+    when settings.hosts['glass_fish'].include?(hostname)
+      GlassFish::Status
+    end
   end
 end
