@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'sinatra/config_file'
 require 'sinatra/json'
 require 'net/ssh'
 require 'parallel'
@@ -8,9 +7,6 @@ require './lib/tomcat/status'
 
 class App < Sinatra::Base
   set :root, File.dirname(__FILE__)
-
-  register Sinatra::ConfigFile
-  config_file "#{settings.root}/config/config.yml"
 
   get '/' do
     redirect '/statuses'
