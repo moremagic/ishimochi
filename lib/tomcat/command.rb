@@ -4,8 +4,8 @@ module Tomcat
       "ls /opt/sms/app"
     end
 
-    def self.process_check
-      "ps -ef | grep 'java' | grep -v 'grep' | awk '{ print $9 \"\t\" $11 }'"
+    def self.process_check(app_name)
+      "ps -ef | grep '#{app_name}' | grep -v 'grep'"
     end
 
     def self.health_check

@@ -4,6 +4,7 @@ require 'sinatra/json'
 require 'net/ssh'
 require 'parallel'
 require './lib/glass_fish/status'
+require './lib/tomcat/status'
 
 class App < Sinatra::Base
   set :root, File.dirname(__FILE__)
@@ -25,6 +26,7 @@ class App < Sinatra::Base
   end
 
   get '/statuses/:hostname' do
-    json({ "#{params['hostname']}": GlassFish::Status.fetch(params['hostname']) })
+    res = Tomcat::Status.fetch(params['hostname'])
+    json({ "#{params['hostname']}": res })
   end
 end
