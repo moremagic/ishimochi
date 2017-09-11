@@ -2,8 +2,10 @@ require 'sinatra/base'
 require 'sinatra/json'
 require 'net/ssh'
 require 'parallel'
-require './lib/glass_fish/status'
-require './lib/tomcat/status'
+require './lib/status'
+require './lib/config_loader'
+
+Config = ConfigLoader.new
 
 class App < Sinatra::Base
   set :root, File.dirname(__FILE__)
@@ -22,18 +24,7 @@ class App < Sinatra::Base
   end
 
   get '/statuses/:hostname' do
-    res = type(params['hostname']).fetch(params['hostname'])
+    res = Status.fetch(params['hostname'])
     json({ "#{params['hostname']}": res })
-  end
-
-  private
-
-  def type(hostname)
-    case
-    when settings.hosts['tomcat'].include?(hostname)
-      Tomcat::Status
-    when settings.hosts['glass_fish'].include?(hostname)
-      GlassFish::Status
-    end
   end
 end
