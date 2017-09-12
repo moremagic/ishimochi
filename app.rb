@@ -24,6 +24,6 @@ class App < Sinatra::Base
 
   get '/statuses/:hostname' do
     res = Status.fetch(params['hostname'])
-    json({ "#{params['hostname']}": res })
+    json res
   end
 end
