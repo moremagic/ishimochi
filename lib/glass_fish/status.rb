@@ -5,6 +5,8 @@ module GlassFish
     def self.fetch(hostname)
       Net::SSH.start hostname do |ssh|
         application_statuses(deploy_status.call ssh).inject({}) do |res, item|
+          res[:hostname] = hostname
+          res[:type] = 'glass_fish'
           res[:process_check] = !process_check.call(ssh).empty?
           res[item[:app_name]] = {
             deploy_status: item[:deploy_status],

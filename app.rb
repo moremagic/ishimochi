@@ -15,16 +15,10 @@ class App < Sinatra::Base
   end
 
   get '/statuses' do
-    tomcat = Parallel.map(Config.hosts['tomcat'], in_processes: 5) do |hostname|
+    response = Parallel.map(Config.hosts.values.flatten, in_processes: 10) do |hostname|
       Status.fetch hostname
     end
 
-    glass_fish = Parallel.map(Config.hosts['glass_fish'], in_processes: 5) do |hostname|
-      Status.fetch hostname
-    end
-
-    response = Hash[[Config.hosts['tomcat'], tomcat].transpose]
-    response.merge!(Hash[[Config.hosts['glass_fish'], glass_fish].transpose])
     json response
   end
 
