@@ -1,14 +1,17 @@
 # Setup
 
-- Add `config/config.yml`
+- Add `config/hosts.yml`
 
 example
 
 ```yml
-hosts:
+glass_fish:
   - host1
   - host2
   - host3
+tomcat:
+  - host4
+  - host5
 ```
 
 - Bundle install
