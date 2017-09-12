@@ -15,15 +15,15 @@ class App < Sinatra::Base
   end
 
   get '/statuses' do
-    response = Parallel.map(Config.hosts.values.flatten, in_processes: 10) do |hostname|
+    result = Parallel.map(Config.hosts.values.flatten, in_processes: 10) do |hostname|
       Status.fetch hostname
     end
 
-    json response
+    json result
   end
 
   get '/statuses/:hostname' do
-    res = Status.fetch(params['hostname'])
-    json res
+    result = Status.fetch(params['hostname'])
+    json result
   end
 end
