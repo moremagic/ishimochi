@@ -5,8 +5,9 @@ module Tomcat
     def self.fetch(hostname)
       Net::SSH.start hostname do |ssh|
         application_list.call(ssh).gsub("biz-", "").split("\n").inject({ hostname: hostname, type: 'tomcat', status: !process_check.call(ssh).empty? , apps: [] }) do |res, app_name|
-          res[:apps] << { app_name: app_name, health_check: health_check.call(ssh, app_name) }
-          #res[:apps] << { app_name: app_name, health_check: health_check.call(ssh, item[:app_name]) }
+          if !app_name.end_with?(".war") && !app_name.eql?("ROOT")  
+            res[:apps] << { app_name: app_name, health_check: health_check.call(ssh, app_name) }
+          end
           res
         end
       end
